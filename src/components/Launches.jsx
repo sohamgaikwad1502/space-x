@@ -8,10 +8,11 @@ import Spinner from "./Spinner";
 const Launches = ({ year, launch, land }) => {
   const [filteredLaunches, setFilteredLaunches] = useState([]);
   const [current_page, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const allLaunches = useSelector((store) => store.initialData);
-  const launchAndLand = useSelector((store) => store.launch_and_land);
-  const launchSuccess = useSelector((store) => store.launch_success);
+  const allLaunches = useSelector((store) => store.spaceXData.allData);
+  const launchAndLand = useSelector((store) => store.spaceXData.launchAndLand);
+  const launchSuccess = useSelector((store) => store.spaceXData.launch);
 
   const length = filteredLaunches.length;
   const page_length = 16;
@@ -29,8 +30,12 @@ const Launches = ({ year, launch, land }) => {
   };
 
   useEffect(() => {
-    if (!allLaunches || !launchAndLand || !launchSuccess)
-      return setFilteredLaunches([]);
+    if (!allLaunches || !launchAndLand || !launchSuccess) {
+      setFilteredLaunches([]);
+      return;
+    }
+
+    setLoading(true);
 
     let filtered = [...allLaunches];
     if (year && launch && land) {
@@ -63,9 +68,10 @@ const Launches = ({ year, launch, land }) => {
     }
 
     setFilteredLaunches(filtered);
-  }, [year, launch, land, allLaunches]);
+    setLoading(false);
+  }, [year, launch, land, allLaunches, launchAndLand, launchSuccess]);
 
-  if (filteredLaunches.length === 0) {
+  if (loading || filteredLaunches.length === 0) {
     return <Spinner />;
   }
 

@@ -7,9 +7,11 @@ import {
   WITH_LAUNCH_SUCCESS,
   WITHOUT_ANY_FILTERS,
 } from "../utils/constants";
-import { addAllData } from "../utils/slices/initialDataSlice";
-import { addLaunches } from "../utils/slices/launchSlice";
-import { addLaunchAndLand } from "../utils/slices/launchAndLandSlice";
+import {
+  addAllData,
+  addLaunchAndLand,
+  addLaunches,
+} from "../utils/slices/spaceXData";
 
 const Home = () => {
   const dispatch = useDispatch();
