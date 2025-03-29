@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { WITH_ALL_FILTERS } from "../utils/constants";
 import LaunchCards from "./LaunchCards";
+import Spinner from "./Spinner";
 
 const Launches = ({ year, launch, land }) => {
   const [filteredLaunches, setFilteredLaunches] = useState([]);
@@ -65,11 +66,7 @@ const Launches = ({ year, launch, land }) => {
   }, [year, launch, land, allLaunches]);
 
   if (filteredLaunches.length === 0) {
-    return (
-      <div className="col-span-4 text-center text-gray-500 py-10">
-        No launches found with the selected filters.
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
