@@ -2,12 +2,25 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { WITH_ALL_FILTERS } from "../utils/constants";
+import LaunchCards from "./LaunchCards";
 
 const Launches = ({ year, launch, land }) => {
   const [filteredLaunches, setFilteredLaunches] = useState([]);
+  const [current_page, setCurrentPage] = useState(0);
+
   const allLaunches = useSelector((store) => store.initialData);
   const launchAndLand = useSelector((store) => store.launch_and_land);
   const launchSuccess = useSelector((store) => store.launch_success);
+
+  const length = filteredLaunches.length;
+  const page_length = 16;
+  const no_of_pages = filteredLaunches ? Math.ceil(length / page_length) : 0;
+  const start = current_page * page_length;
+  const end = start + page_length;
+
+  const handlePageChange = (n) => {
+    setCurrentPage(n);
+  };
 
   const fetchAll = async (year) => {
     const withallfiltersData = await axios.get(WITH_ALL_FILTERS + year);
@@ -61,75 +74,52 @@ const Launches = ({ year, launch, land }) => {
 
   return (
     <>
-      {filteredLaunches.map((launchItem) => (
-        <div
-          key={launchItem.flight_number}
-          className="bg-white p-4 rounded-lg shadow-md flex flex-col justify-center items-center"
+      <LaunchCards
+        filteredLaunches={filteredLaunches}
+        start={start}
+        end={end}
+      />
+      <div className="col-span-full text-2xl text-center items-center ">
+        <button
+          className="m-2 cursor-pointer"
+          disabled={current_page === 0}
+          onClick={() => {
+            setCurrentPage((prev) => prev - 1);
+          }}
         >
-          <div className="flex flex-col items-center mb-6 w-full">
-            <div className="mb-6 w-full">
-              <img
-                src={
-                  launchItem.links?.mission_patch_small ||
-                  "https://images2.imgbox.com/3c/0e/T8iJcSN3_o.png"
-                }
-                alt={`${launchItem.mission_name} Mission Badge`}
-                className="w-full h-64 object-contain bg-gray-200"
-              />
-            </div>
-
-            <div className="flex-col justify-between items-center w-full">
-              <h2 className="text-2xl font-bold text-blue-700 mb-4 text-center">
-                {launchItem.mission_name} #{launchItem.flight_number}
-              </h2>
-
-              <div className="mb-3">
-                <span className="font-semibold text-base">Mission Ids:</span>
-                <ul className="list-disc list-inside text-base text-gray-800">
-                  {launchItem.mission_id?.length > 0 ? (
-                    launchItem.mission_id.map((id) => (
-                      <li key={id} className="ml-2">
-                        {id}
-                      </li>
-                    ))
-                  ) : (
-                    <li className="ml-2">No Mission IDs</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="mb-3">
-                <span className="font-semibold text-base">Launch Year:</span>
-                <span className="text-base text-gray-800 ml-2">
-                  {launchItem.launch_year}
-                </span>
-              </div>
-
-              <div className="mb-3">
-                <span className="font-semibold text-base">
-                  Successful Launch:
-                </span>
-                <span className="text-base text-gray-800 ml-2">
-                  {launchItem.launch_success ? "True" : "False"}
-                </span>
-              </div>
-
-              <div>
-                <span className="font-semibold text-base">
-                  Successful Landing:
-                </span>
-                <span className="text-base text-gray-800 ml-2">
-                  {launchItem.rocket?.first_stage?.cores?.some(
-                    (core) => core.land_success
-                  )
-                    ? "True"
-                    : "False"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
+          <img
+            src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2.png"
+            alt="external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2"
+          />
+        </button>
+        {[...Array(no_of_pages).keys()].map((n) => {
+          return (
+            <button
+              key={n}
+              className={`px-2 py-1 m-1  text-2xl border-4 border-none cursor-pointer ${
+                n === current_page ? "bg-green-500" : "bg-green-300"
+              } `}
+              onClick={() => {
+                handlePageChange(n);
+              }}
+            >
+              {n}
+            </button>
+          );
+        })}
+        <button
+          disabled={current_page === no_of_pages - 1}
+          className="m-2 cursor-pointer"
+          onClick={() => {
+            setCurrentPage((prev) => prev + 1);
+          }}
+        >
+          <img
+            src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-right-chevron-arrows-inkubators-detailed-outline-inkubators-2.png"
+            alt="external-right-chevron-arrows-inkubators-detailed-outline-inkubators-2"
+          />
+        </button>
+      </div>
     </>
   );
 };
