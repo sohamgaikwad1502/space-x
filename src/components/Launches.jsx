@@ -25,8 +25,12 @@ const Launches = ({ year, launch, land }) => {
   };
 
   const fetchAll = async (year) => {
-    const withallfiltersData = await axios.get(WITH_ALL_FILTERS + year);
-    return withallfiltersData.data;
+    try {
+      const withallfiltersData = await axios.get(WITH_ALL_FILTERS + year);
+      return withallfiltersData.data;
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   useEffect(() => {
